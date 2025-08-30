@@ -1,0 +1,50 @@
+CREATE DATABASE IF NOT EXISTS `snsu_canteen` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `snsu_canteen`;
+
+CREATE TABLE IF NOT EXISTS `students` (
+  `id` VARCHAR(32) NOT NULL,
+  `email` VARCHAR(191) NOT NULL UNIQUE,
+  `password` VARCHAR(191) NOT NULL,
+  `name` VARCHAR(191) NOT NULL,
+  `balance` DECIMAL(10,2) NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `items` (
+  `id` VARCHAR(32) NOT NULL,
+  `name` VARCHAR(191) NOT NULL,
+  `category` ENUM('MEAL','SNACKS','DRINKS','BISCUIT') NOT NULL,
+  `price` INT NOT NULL,
+  `image` VARCHAR(255) DEFAULT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `combos` (
+  `id` VARCHAR(32) NOT NULL,
+  `name` VARCHAR(191) NOT NULL,
+  `price` INT NOT NULL,
+  `item_ids` TEXT NOT NULL,
+  `image` VARCHAR(255) DEFAULT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `orders` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `student_id` VARCHAR(32) NOT NULL,
+  `student_name` VARCHAR(191) NOT NULL,
+  `total_amount` DECIMAL(10,2) NOT NULL,
+  `status` ENUM('PENDING', 'CONFIRMED', 'REFUNDED') NOT NULL DEFAULT 'PENDING',
+  `items` JSON NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`student_id`) REFERENCES `students`(`id`) ON DELETE CASCADE,
+  INDEX `idx_student_id` (`student_id`),
+  INDEX `idx_status` (`status`),
+  INDEX `idx_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
